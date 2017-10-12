@@ -1,0 +1,8 @@
+YesIntent yes
+YesIntent sure
+YesIntent yeah
+NoIntent no
+NoIntent naw
+NoIntent nope
+SearchIntent {searchTerm}
+SearchIntent search for {searchTerm}

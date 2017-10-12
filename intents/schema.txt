@@ -1,0 +1,19 @@
+{
+  "intents": [
+    {
+      "intent": "YesIntent"
+    },
+    {
+      "intent": "NoIntent"
+    },
+    {
+      "intent": "SearchIntent",
+      "slots": [
+        {
+          "name": "searchTerm",
+          "type": "AMAZON.Food"
+        }
+      ]
+    }
+  ]
+}
