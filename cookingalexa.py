@@ -1,12 +1,12 @@
 from flask import Flask
 from flask_ask import Ask, statement, question, session
 from collections import namedtuple
-import json
 import requests
-import urllib
 import time
 import unidecode
 import logging
+import sys
+
 
 app = Flask(__name__)
 ask = Ask(app, "/cookingalexa")
@@ -24,8 +24,10 @@ def getRecipeJson(searchTerm):
     global recipe
 
     url = "http://api2.bigoven.com/recipes?pg=1&rpp=25&title_kw=" + searchTerm + "&api_key=qjYrfW6vcrkd97lI2NHMeMhWag45oaX7"
+    
+    r = requests.get(url)
+    searchResults = r.json()
 
-    searchResults = json.load(urllib.urlopen(url))
     recipeList = searchResults['Results']
     recipe = recipeList[0]
 
@@ -43,7 +45,8 @@ def getDetailsJson():
 
     url = "http://api2.bigoven.com/recipe/" + str(recipe['RecipeID']) + "?api_key=qjYrfW6vcrkd97lI2NHMeMhWag45oaX7"
 
-    recipeDetails = json.load(urllib.urlopen(url))
+    r = requests.get(url)
+    recipieDetails = r.json()
 
 @app.route('/')
 def homepage():
@@ -76,4 +79,4 @@ def no_intent():
     return question('The next result is a recipe for %s with %.1f stars. Would you like to use this recipe?' % (recipe['Title'], recipe['StarRating']))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port = 5000)
