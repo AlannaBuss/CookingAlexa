@@ -46,7 +46,7 @@ def getDetailsJson():
     url = "http://api2.bigoven.com/recipe/" + str(recipe['RecipeID']) + "?api_key=qjYrfW6vcrkd97lI2NHMeMhWag45oaX7"
 
     r = requests.get(url)
-    recipieDetails = r.json()
+    recipeDetails = r.json()
 
 @app.route('/')
 def homepage():
@@ -67,7 +67,7 @@ def search(searchTerm):
 def share_headlines():
     getDetailsJson()
     global recipeDetails
-
+    print(recipeDetails)
     return question('%s' % recipeDetails['Instructions'])
 
 @ask.intent("NoIntent")
