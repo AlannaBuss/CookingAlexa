@@ -11,12 +11,11 @@ import sys
 app = Flask(__name__)
 ask = Ask(app, "/cookingalexa")
 
-searchResults = ''
-recipeList = ''
+searchResults = None
+recipeList = None
 recipeIndex = 0
-recipe = ''
-recipeDetails = ''
-ingredientNames = ''
+recipe = None
+recipeDetails = None
 
 def getRecipeJson(searchTerm): 
     global searchResults
@@ -29,7 +28,7 @@ def getRecipeJson(searchTerm):
     searchResults = r.json()
 
     recipeList = searchResults['Results']
-    recipe = recipeList[0]
+    recipe = recipeList[recipeIndex]
 
 def nextRecipe(): 
     global recipeIndex
@@ -64,10 +63,9 @@ def search(searchTerm):
     return question("Found %i results for %s. The first result is a recipe for %s with %.1f stars. Would you like to use this recipe?" % (searchResults['ResultCount'], searchTerm, recipe['Title'], recipe['StarRating']))
 
 @ask.intent("YesIntent")
-def share_headlines():
+def yes_intent():
     getDetailsJson()
     global recipeDetails
-    print(recipeDetails)
     return question('%s' % recipeDetails['Instructions'])
 
 @ask.intent("NoIntent")
@@ -77,6 +75,15 @@ def no_intent():
 
     nextRecipe()
     return question('The next result is a recipe for %s with %.1f stars. Would you like to use this recipe?' % (recipe['Title'], recipe['StarRating']))
+
+@ask.intent("IngredientAmountIntent")
+def ingredient_amount(ingredient):
+    global recipe
+
+    if recipe is None:
+        return question ('No recipe selected.')
+    
+    return question('Intent understood!')
 
 if __name__ == '__main__':
     app.run(debug=True, port = 5000)
