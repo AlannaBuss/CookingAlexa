@@ -6,6 +6,7 @@ import time
 import unidecode
 import logging
 import sys
+from Recipe import Recipe
 
 
 app = Flask(__name__)
@@ -16,6 +17,7 @@ recipeList = None
 recipeIndex = 0
 recipe = None
 recipeDetails = None
+recipeInformation = None
 
 def getRecipeJson(searchTerm): 
     global searchResults
@@ -57,33 +59,52 @@ def start_skill():
     welcome_message = 'I am Cooking Alexa! What kind of food would you like to make?'
     return question(welcome_message)
 
+
 @ask.intent("SearchIntent", convert={'searchTerm': 'var'})
 def search(searchTerm):
+    recipeInformation = None
     getRecipeJson(searchTerm)
     return question("Found %i results for %s. The first result is a recipe for %s with %.1f stars. Would you like to use this recipe?" % (searchResults['ResultCount'], searchTerm, recipe['Title'], recipe['StarRating']))
 
 @ask.intent("YesIntent")
 def yes_intent():
-    getDetailsJson()
+    global recipeInformation
     global recipeDetails
-    return question('%s' % recipeDetails['Instructions'])
+    
+    if recipeInformation == None:
+        if recipe == None:
+            return question('I am not sure what you mean.')
+        else:
+            getDetailsJson()
+            recipeInformation = Recipe(recipeDetails)
+            return question('Recipe Selected.')
+            #return question('%s' % recipeDetails['Instructions'])
+    else:
+        return question (recipeInformation.yes())
 
 @ask.intent("NoIntent")
 def no_intent():
     global searchTerm
     global recipe
+    global recipeInformation
 
-    nextRecipe()
-    return question('The next result is a recipe for %s with %.1f stars. Would you like to use this recipe?' % (recipe['Title'], recipe['StarRating']))
+    if recipeInformation == None:
+        if recipe == None:
+            return question('I am not sure what you mean.')
+        else:
+            nextRecipe()
+            return question('The next result is a recipe for %s with %.1f stars. Would you like to use this recipe?' % (recipe['Title'], recipe['StarRating']))
+    else:
+        return question (recipeInformation.no())
 
-@ask.intent("IngredientAmountIntent")
+@ask.intent("IngredientAmountIntent", convert={'ingredient': 'var'})
 def ingredient_amount(ingredient):
-    global recipe
-
-    if recipe is None:
+    global recipeInformation
+   
+    if recipeInformation == None:
         return question ('No recipe selected.')
     
-    return question('Intent understood!')
+    return question(recipeInformation.IngredientAmount(ingredient))
 
 if __name__ == '__main__':
     app.run(debug=True, port = 5000)

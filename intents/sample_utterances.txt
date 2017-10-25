@@ -1,0 +1,12 @@
+AMAZON.StopIntent stop
+IngredientAmountIntent How much {ingredient} do I need
+IngredientAmountIntent How much {ingredient}
+IngredientAmountIntent Do I need {ingredient}
+NoIntent no
+NoIntent naw
+NoIntent nope
+SearchIntent {searchTerm}
+SearchIntent search for {searchTerm}
+YesIntent yes
+YesIntent sure
+YesIntent yeah

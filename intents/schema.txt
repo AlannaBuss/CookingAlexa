@@ -1,19 +1,37 @@
 {
   "intents": [
     {
-      "intent": "YesIntent"
+      "intent": "AMAZON.CancelIntent"
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "slots": [
+        {
+          "name": "ingredient",
+          "type": "AMAZON.Food"
+        }
+      ],
+      "intent": "IngredientAmountIntent"
     },
     {
       "intent": "NoIntent"
     },
     {
-      "intent": "SearchIntent",
       "slots": [
         {
           "name": "searchTerm",
           "type": "AMAZON.Food"
         }
-      ]
+      ],
+      "intent": "SearchIntent"
+    },
+    {
+      "intent": "YesIntent"
     }
   ]
 }
