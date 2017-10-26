@@ -12,6 +12,7 @@ from Recipe import Recipe
 app = Flask(__name__)
 ask = Ask(app, "/cookingalexa")
 
+searchDone = False
 searchResults = None
 recipeList = None
 recipeIndex = 0
@@ -62,6 +63,7 @@ def start_skill():
 
 @ask.intent("SearchIntent", convert={'searchTerm': 'var'})
 def search(searchTerm):
+    searchDone = True
     recipeInformation = None
     getRecipeJson(searchTerm)
     return question("Found %i results for %s. The first result is a recipe for %s with %.1f stars. Would you like to use this recipe?" % (searchResults['ResultCount'], searchTerm, recipe['Title'], recipe['StarRating']))
@@ -72,7 +74,7 @@ def yes_intent():
     global recipeDetails
     
     if recipeInformation == None:
-        if recipe == None:
+        if searchDone == False:
             return question('I am not sure what you mean.')
         else:
             getDetailsJson()
@@ -89,7 +91,7 @@ def no_intent():
     global recipeInformation
 
     if recipeInformation == None:
-        if recipe == None:
+        if searchDone == False:
             return question('I am not sure what you mean.')
         else:
             nextRecipe()
