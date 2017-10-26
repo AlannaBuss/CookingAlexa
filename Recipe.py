@@ -12,6 +12,13 @@ class Recipe(object):
       self.ingredients = json['Ingredients']
       self.instructions = json['Instructions']
       self.state = 'None'
+      self.steps = nltk.sent_tokenize(self.instructions)
+      # Remove steps that have no alphabet letters
+      # NLTK sentence parsing can create sentences from numbering, etc.
+      for step in list(self.steps):
+         if (len(nltk.regexp_tokenize(step, '[a-zA-Z]')) == 0):
+            self.steps.remove(step)
+      self.currentStepIndex = 0
 
    def IngredientAmount(self, specified_ingredient):
       self.state = 'ingredient'
@@ -77,3 +84,23 @@ class Recipe(object):
          similar_ingredients.extend([ing[1] for ing in distance_list[:2]])
 
       return similar_ingredients
+
+   def getNextStep(self):
+      if self.currentStepIndex >= len(self.steps) - 1:
+         return 'You are at the last step'
+
+      self.currentStepIndex += 1
+      return self.steps[self.currentStepIndex]
+
+   def getPreviousStep(self):
+      if self.currentStepIndex <= 0:
+         return 'You are at the first step'
+
+      self.currentStepIndex -= 1
+      return self.steps[self.currentStepIndex]
+
+   def getCurrentStep(self):
+      if len(self.steps) == 0:
+         return 'No steps found'
+
+      return self.steps[self.currentStepIndex]

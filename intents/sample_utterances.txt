@@ -10,3 +10,14 @@ SearchIntent search for {searchTerm}
 YesIntent yes
 YesIntent sure
 YesIntent yeah
+NextStepIntent next
+NextStepIntent What's next
+NextStepIntent next step
+PreviousStepIntent What was the previous step
+PreviousStepIntent What was the last step
+PreviousStepIntent previous step
+PreviousStepIntent last step
+RepeatStepIntent repeat
+RepeatStepIntent say that again
+RepeatStepIntent Can you repeat that
+RepeatStepIntent repeat this step

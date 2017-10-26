@@ -77,8 +77,9 @@ def yes_intent():
         else:
             getDetailsJson()
             recipeInformation = Recipe(recipeDetails)
-            return question('Recipe Selected.')
+            #return question('Recipe Selected.')
             #return question('%s' % recipeDetails['Instructions'])
+            return question(recipeInformation.getCurrentStep())
     else:
         return question (recipeInformation.yes())
 
@@ -105,6 +106,33 @@ def ingredient_amount(ingredient):
         return question ('No recipe selected.')
     
     return question(recipeInformation.IngredientAmount(ingredient))
+
+@ask.intent("NextStepIntent")
+def next_step():
+    global recipeInformation
+
+    if recipeInformation == None:
+        return question('No recipe selected.')
+
+    return question(recipeInformation.getNextStep())
+
+@ask.intent("PreviousStepIntent")
+def previous_step():
+    global recipeInformation
+
+    if recipeInformation == None:
+        return question('No recipe selected.')
+
+    return question(recipeInformation.getPreviousStep())
+
+@ask.intent("RepeatStepIntent")
+def repeat_step():
+    global recipeInformation
+
+    if recipeInformation == None:
+        return question('No recipe selected.')
+
+    return question(recipeInformation.getCurrentStep())
 
 if __name__ == '__main__':
     app.run(debug=True, port = 5000)
