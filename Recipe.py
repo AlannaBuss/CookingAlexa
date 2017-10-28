@@ -18,19 +18,36 @@ class Recipe(object):
       ingredient = self.getIngredient(specified_ingredient)
       if ingredient != None:
          self.state = 'None'
-         return "Yes you need that ingredient"
+         return self.translateAmount(ingredient)
+         #return "Yes you need that ingredient"
       else:
          self.sim_ingredients = self.getSimilarIngredients(specified_ingredient) 
          self.sim_ingr_index = 0
          ingred_name = self.sim_ingredients[self.sim_ingr_index]["Name"]
-         self.sim_ingr_index += 1
          response = "Did you mean " + ingred_name + "?"
          return response
+
+   def translateAmount(self, ingredient):
+      
+      translated_amount = None
+      amount = ingredient["DisplayQuantity"]
+      unit = ingredient["Unit"]
+      
+      translated_amount = amount
+
+      if unit != None:
+         translated_amount += " " + unit
+
+      name = ingredient["Name"]
+
+      return "You need " + translated_amount + " " +  name + " for this recipe."
 
    def yes(self):
       if self.state == 'ingredient':
          self.state = 'None'
-         return "Yes you need that ingredient"
+         ingredient = self.sim_ingredients[self.sim_ingr_index]
+         return self.translateAmount(ingredient)
+         #return "Yes you need that ingredient"
       else:
          return "I'm not sure what you mean."
 
@@ -38,8 +55,8 @@ class Recipe(object):
    def no(self):
       if self.state == 'ingredient':
          if self.sim_ingr_index < len(self.sim_ingredients):
-            ingred_name = self.sim_ingredients[self.sim_ingr_index]['Name']
             self.sim_ingr_index += 1
+            ingred_name = self.sim_ingredients[self.sim_ingr_index]['Name']
             response = "Did you mean " + ingred_name + "?"
             return response
          else:
