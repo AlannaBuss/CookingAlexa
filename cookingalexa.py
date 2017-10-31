@@ -1,4 +1,5 @@
 from flask import Flask
+from enum import Enum
 from flask_ask import Ask, statement, question, session
 from collections import namedtuple
 import requests
@@ -12,42 +13,23 @@ from Recipe import Recipe
 app = Flask(__name__)
 ask = Ask(app, "/cookingalexa")
 
-searchResults = None
+class State(Enum):
+    INIT = 1
+    SEARCHING = 2
+    SELECTED = 3
+
+currentState = State.INIT
+
 recipeList = None
 recipeIndex = 0
-recipe = None
-recipeDetails = None
 recipeInformation = None
 
-def getRecipeJson(searchTerm): 
-    global searchResults
-    global recipeList
-    global recipe
+def setRecipeInformation():
+    global recipeInformation
 
-    url = "http://api2.bigoven.com/recipes?pg=1&rpp=25&title_kw=" + searchTerm + "&api_key=qjYrfW6vcrkd97lI2NHMeMhWag45oaX7"
-    
-    r = requests.get(url)
-    searchResults = r.json()
-
-    recipeList = searchResults['Results']
     recipe = recipeList[recipeIndex]
-
-def nextRecipe(): 
-    global recipeIndex
-    global recipe
-    global recipeList
-
-    recipeIndex += 1
-    recipe = recipeList[recipeIndex]
-
-def getDetailsJson():
-    global recipeDetails
-    global recipe
-
     url = "http://api2.bigoven.com/recipe/" + str(recipe['RecipeID']) + "?api_key=qjYrfW6vcrkd97lI2NHMeMhWag45oaX7"
-
-    r = requests.get(url)
-    recipeDetails = r.json()
+    recipeInformation = Recipe(requests.get(url).json())
 
 @app.route('/')
 def homepage():
@@ -59,48 +41,66 @@ def start_skill():
     welcome_message = 'I am Cooking Alexa! What kind of food would you like to make?'
     return question(welcome_message)
 
+def getRecipeHeader():
+    recipe = recipeList[recipeIndex]
+    if recipeIndex == 0:
+        index = "first"
+    else:
+        index = "next"
+    return ("The " + index + " recipe is a recipe for  %s and has %.1f stars. Would you like to use this recipe?") % (recipe['Title'], recipe['StarRating'])
+
 
 @ask.intent("SearchIntent", convert={'searchTerm': 'var'})
 def search(searchTerm):
-    recipeInformation = None
-    getRecipeJson(searchTerm)
-    return question("Found %i results for %s. The first result is a recipe for %s with %.1f stars. Would you like to use this recipe?" % (searchResults['ResultCount'], searchTerm, recipe['Title'], recipe['StarRating']))
+    global currentState
+    global recipeList
+
+    currentState = State.SEARCHING
+    try:
+        url = "http://api2.bigoven.com/recipes?pg=1&rpp=25&title_kw=" + searchTerm + "&api_key=qjYrfW6vcrkd97lI2NHMeMhWag45oaX7"
+        results = requests.get(url).json()
+        recipeList = results['Results']
+
+        numResults = "Found " + str(results['ResultCount']) + " results for " + searchTerm
+        recipeInformation = getRecipeHeader()
+        return question(numResults + recipeInformation)
+    except Exception:
+        return statement("We do not have a recipe for that yet. ")
+    
 
 @ask.intent("YesIntent")
 def yes_intent():
+    global currentState
     global recipeInformation
-    global recipeDetails
     
     if recipeInformation == None:
-        if recipe == None:
+        if currentState is State.INIT:
             return question('I am not sure what you mean.')
-        else:
-            getDetailsJson()
-            recipeInformation = Recipe(recipeDetails)
-            #return question('Recipe Selected.')
-            #return question('%s' % recipeDetails['Instructions'])
+        elif currentState is State.SEARCHING:
+            setRecipeInformation()
+            currentState = State.SELECTED
             return question(recipeInformation.getCurrentStep())
+        else:
+            pass
     else:
         return question (recipeInformation.yes())
 
 @ask.intent("NoIntent")
 def no_intent():
-    global searchTerm
-    global recipe
+    global recipeIndex
     global recipeInformation
 
     if recipeInformation == None:
-        if recipe == None:
+        if currentState is State.INIT:
             return question('I am not sure what you mean.')
         else:
-            nextRecipe()
-            return question('The next result is a recipe for %s with %.1f stars. Would you like to use this recipe?' % (recipe['Title'], recipe['StarRating']))
+            recipeIndex += 1
+            return question(getRecipeHeader())
     else:
         return question (recipeInformation.no())
 
 @ask.intent("IngredientAmountIntent", convert={'ingredient': 'var'})
 def ingredient_amount(ingredient):
-    global recipeInformation
    
     if recipeInformation == None:
         return question ('No recipe selected.')
