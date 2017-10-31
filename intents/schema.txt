@@ -32,6 +32,15 @@
     },
     {
       "intent": "YesIntent"
+    },
+    {
+      "intent": "NextStepIntent"
+    },
+    {
+      "intent": "PreviousStepIntent"
+    },
+    {
+      "intent": "RepeatStepIntent"
     }
   ]
 }

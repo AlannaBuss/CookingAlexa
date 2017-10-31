@@ -79,7 +79,7 @@ def yes_intent():
         elif currentState is State.SEARCHING:
             setRecipeInformation()
             currentState = State.SELECTED
-            return question('Recipe Selected.')
+            return question(recipeInformation.getCurrentStep())
         else:
             pass
     else:
@@ -106,6 +106,33 @@ def ingredient_amount(ingredient):
         return question ('No recipe selected.')
     
     return question(recipeInformation.IngredientAmount(ingredient))
+
+@ask.intent("NextStepIntent")
+def next_step():
+    global recipeInformation
+
+    if recipeInformation == None:
+        return question('No recipe selected.')
+
+    return question(recipeInformation.getNextStep())
+
+@ask.intent("PreviousStepIntent")
+def previous_step():
+    global recipeInformation
+
+    if recipeInformation == None:
+        return question('No recipe selected.')
+
+    return question(recipeInformation.getPreviousStep())
+
+@ask.intent("RepeatStepIntent")
+def repeat_step():
+    global recipeInformation
+
+    if recipeInformation == None:
+        return question('No recipe selected.')
+
+    return question(recipeInformation.getCurrentStep())
 
 if __name__ == '__main__':
     app.run(debug=True, port = 5000)
