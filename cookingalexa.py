@@ -113,7 +113,7 @@ def multiply_servings(factor):
     print('current state: ' + str(currentState.value))
     if currentState == State.SELECTED:
         recipeInformation.multiply_servings(factor)
-        return statement('Recipe multiplied by' + factor)
+        return statement('Recipe multiplied by ' + factor)
     else:
         return question('I am not sure what you mean.')
 
