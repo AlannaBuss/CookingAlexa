@@ -21,3 +21,4 @@ RepeatStepIntent repeat
 RepeatStepIntent say that again
 RepeatStepIntent Can you repeat that
 RepeatStepIntent repeat this step
+MultiplyServingsIntent I want to multiply the recipe by {factor}

@@ -1,4 +1,5 @@
 import nltk
+from fractions import Fraction
 from nltk.metrics import edit_distance
 
 # Documentation for the big oven API json 
@@ -20,6 +21,17 @@ class Recipe(object):
             self.steps.remove(step)
       self.currentStepIndex = 0
 
+   def multiply_servings(self, factor):
+      for ingredient in self.ingredients:
+         try:
+            ingredient["DisplayQuantity"] = factor * int(ingredient["DisplayQuantity"])
+         except:
+            pieces = str.split(ingredient["DisplayQuantity"])
+            total = 0.0
+            for piece in pieces:
+               total += Fraction(piece)
+            ingredient = (float(factor) * float(total))
+            
    def IngredientAmount(self, specified_ingredient):
       self.state = 'ingredient'
       ingredient = self.getIngredient(specified_ingredient)

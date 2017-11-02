@@ -31,6 +31,15 @@
       "intent": "SearchIntent"
     },
     {
+      "slots": [
+        {
+          "name": "factor",
+          "type": "AMAZON.NUMBER"
+        }
+      ],
+      "intent": "MultiplyServingsIntent"
+    },
+    {
       "intent": "YesIntent"
     },
     {

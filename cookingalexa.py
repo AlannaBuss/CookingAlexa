@@ -107,6 +107,16 @@ def ingredient_amount(ingredient):
     
     return question(recipeInformation.IngredientAmount(ingredient))
 
+@ask.intent("MultiplyServingsIntent", convert={'factor': 'var'})
+def multiply_servings(factor):
+    global recipeInformation
+    print('current state: ' + str(currentState.value))
+    if currentState == State.SELECTED:
+        recipeInformation.multiply_servings(factor)
+        return statement('Recipe multiplied by' + factor)
+    else:
+        return question('I am not sure what you mean.')
+
 @ask.intent("NextStepIntent")
 def next_step():
     global recipeInformation
