@@ -28,7 +28,7 @@ def setRecipeInformation():
     global recipeInformation
 
     recipe = recipeList[recipeIndex]
-    url = "http://api2.bigoven.com/recipe/" + str(recipe['RecipeID']) + "?api_key=qjYrfW6vcrkd97lI2NHMeMhWag45oaX7"
+    url = "http://www.cookingalexa.com/api/v1.0/recipes/" + str(recipe['RecipeID'])
     recipeInformation = Recipe(requests.get(url).json())
 
 @app.route('/')
@@ -57,7 +57,7 @@ def search(searchTerm):
 
     currentState = State.SEARCHING
     try:
-        url = "http://api2.bigoven.com/recipes?pg=1&rpp=25&title_kw=" + searchTerm + "&api_key=qjYrfW6vcrkd97lI2NHMeMhWag45oaX7"
+        url = "http://www.cookingalexa.com/api/v1.0/recipes?search_term=" + searchTerm
         results = requests.get(url).json()
         recipeList = results['Results']
 
